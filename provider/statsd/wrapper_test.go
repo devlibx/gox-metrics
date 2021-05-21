@@ -21,7 +21,7 @@ func TestStatsd_Wrapper(t *testing.T) {
 		t.Skip("set -real.statsd=true to enable test")
 	}
 
-	c := metrics.Config{
+	config := metrics.Config{
 		Prefix:              "some",
 		ReportingIntervalMs: 10,
 		Statsd: metrics.StatsdConfig{
@@ -30,10 +30,10 @@ func TestStatsd_Wrapper(t *testing.T) {
 			FlushBytes:      1440,
 		},
 	}
-	m, err := NewRootScope(c)
+	statsdService, err := NewRootScope(config)
 	assert.NoError(t, err)
 
-	counter := m.Counter("some_counter")
+	counter := statsdService.Counter("some_counter")
 	go func() {
 		for i := 0; i < 100000; i++ {
 			counter.Inc(1)

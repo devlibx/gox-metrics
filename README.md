@@ -7,28 +7,27 @@ docker run --rm -it -p 8081:8080 -p 8125:8125/udp -p 8125:8125/tcp  rapidloop/st
 
 #### How to use 
 ```go
-c := metrics.Config{
-		Prefix:              "some",
-		ReportingIntervalMs: 10,
-		Statsd: metrics.StatsdConfig{
-			Address:         "127.0.0.1:8125",
-			FlushIntervalMs: 10,
-			FlushBytes:      1440,
-		},
-	}
-	m, err := NewRootScope(c)
-	assert.NoError(t, err)
+config := metrics.Config{
+    Prefix:              "some",
+    ReportingIntervalMs: 10,
+    Statsd: metrics.StatsdConfig{
+            Address:         "127.0.0.1:8125",
+            FlushIntervalMs: 10,
+            FlushBytes:      1440,
+        },
+    }
 
-	cf, _ := test.MockCf(t, m)
+statsdService, err := NewRootScope(config)
+assert.NoError(t, err)
 
-	counter := cf.Metric().Counter("TestUsageWithCf_Counter")
-	go func() {
-		for i := 0; i < 100000; i++ {
-			counter.Inc(1)
-			time.Sleep(1 * time.Second)
-			fmt.Println("submitting statsd counter")
-		}
-	}()
+counter := statsdService.Counter("some_counter")
+go func() {
+    for i := 0; i < 100000; i++ {
+        counter.Inc(1)
+        time.Sleep(1 * time.Second)
+        fmt.Println("submitting statsd counter")
+    }
+}()
 ```
 
 #### Build and test
