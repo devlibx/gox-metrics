@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"github.com/devlibx/gox-base/metrics"
 	"github.com/devlibx/gox-base/util"
-	"github.com/devlibx/gox-metrics/provider"
+	"github.com/devlibx/gox-metrics"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func init() {
-	provider.Init()
+	gox_metrics.Init()
 }
 
 func TestStatsd_Wrapper(t *testing.T) {
-	testStatsd := provider.GetTestStringConfig("real.statsd")
+	testStatsd := gox_metrics.GetTestStringConfig("real.statsd")
 	if util.IsStringEmpty(testStatsd) {
 		t.Skip("set -real.statsd=true to enable test")
 	}

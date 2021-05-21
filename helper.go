@@ -1,4 +1,4 @@
-package provider
+package gox_metrics
 
 import (
 	"flag"
