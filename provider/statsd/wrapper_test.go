@@ -1,0 +1,45 @@
+package statsd
+
+import (
+	"fmt"
+	"github.com/devlibx/gox-base/metrics"
+	"github.com/devlibx/gox-base/util"
+	"github.com/devlibx/gox-metrics/provider"
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
+)
+
+func init() {
+	provider.Init()
+}
+
+func TestStatsd_Wrapper(t *testing.T) {
+	testStatsd := provider.GetTestStringConfig("real.statsd")
+	if util.IsStringEmpty(testStatsd) {
+		t.Skip("set -real.statsd=true to enable test")
+	}
+
+	c := metrics.Config{
+		Prefix:              "some",
+		ReportingIntervalMs: 10,
+		Statsd: metrics.StatsdConfig{
+			Address:         "127.0.0.1:8125",
+			FlushIntervalMs: 10,
+			FlushBytes:      1440,
+		},
+	}
+	m, err := NewRootScope(c)
+	assert.NoError(t, err)
+
+	counter := m.Counter("some_counter")
+	go func() {
+		for i := 0; i < 100000; i++ {
+			counter.Inc(1)
+			time.Sleep(1 * time.Second)
+			fmt.Println("submitting statsd counter")
+		}
+	}()
+
+	time.Sleep(10 * time.Second)
+}
