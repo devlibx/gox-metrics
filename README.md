@@ -3,6 +3,18 @@
 To test in local you can run Statsd server using following. ```http://localhost:8081/``` to see the data.
 ```shell
 docker run --rm -it -p 8081:8080 -p 8125:8125/udp -p 8125:8125/tcp  rapidloop/statsd-vis -statsdudp 0.0.0.0:8125 -statsdtcp 0.0.0.0:8125
+
+OR
+
+docker run -d --name graphite --restart=always \
+ -p 8081:80 \
+ -p 2003-2004:2003-2004 \
+ -p 2023-2024:2023-2024 \
+ -p 8125:8125/udp \
+ -p 8126:8126 \
+ graphiteapp/graphite-statsd
+ 
+Launch - http://localhost:8081 
 ```
 
 #### How to use 
