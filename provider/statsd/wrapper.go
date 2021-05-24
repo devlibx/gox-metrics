@@ -1,12 +1,11 @@
 package statsd
 
 import (
-	statsd3 "github.com/cactus/go-statsd-client/statsd"
+	statsd "github.com/cactus/go-statsd-client/statsd"
 	"github.com/devlibx/gox-base/errors"
 	"github.com/devlibx/gox-base/metrics"
 	"github.com/uber-go/tally"
-	_ "github.com/uber-go/tally"
-	statsd2 "github.com/uber-go/tally/statsd"
+	tallystatsd "github.com/uber-go/tally/statsd"
 	"io"
 	"sync"
 	"time"
@@ -87,7 +86,7 @@ func (s *statsdMetrics) Capabilities() metrics.Capabilities {
 func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 
 	// Build client
-	statsdClient, err := statsd3.NewBufferedClient(
+	statsdClient, err := statsd.NewBufferedClient(
 		config.Statsd.Address,
 		"stats",
 		time.Duration(config.Statsd.FlushIntervalMs)*time.Millisecond,
@@ -98,8 +97,8 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 	}
 
 	// Create a new Statsd reported
-	opts := statsd2.Options{}
-	reporter := statsd2.NewReporter(statsdClient, opts)
+	opts := tallystatsd.Options{}
+	reporter := tallystatsd.NewReporter(statsdClient, opts)
 
 	// Create tally specific scope object to use
 	scope, closer := tally.NewRootScope(
