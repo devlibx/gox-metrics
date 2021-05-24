@@ -8,6 +8,7 @@ import (
 	_ "github.com/uber-go/tally"
 	statsd2 "github.com/uber-go/tally/statsd"
 	"io"
+	"sync"
 	"time"
 )
 
@@ -43,8 +44,16 @@ func (h *histogram) Start() metrics.Stopwatch {
 
 // Wrapper of tally scope class
 type statsdMetrics struct {
-	scope  tally.Scope
-	closer io.Closer
+	scope     tally.Scope
+	closer    io.Closer
+	closeOnce sync.Once
+}
+
+func (s *statsdMetrics) Stop() error {
+	s.closeOnce.Do(func() {
+		_ = s.closer.Close()
+	})
+	return nil
 }
 
 func (s *statsdMetrics) Counter(name string) metrics.Counter {
@@ -75,7 +84,7 @@ func (s *statsdMetrics) Capabilities() metrics.Capabilities {
 	return s.scope.Capabilities()
 }
 
-func NewRootScope(config metrics.Config) (metrics.Scope, error) {
+func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 
 	// Build client
 	statsdClient, err := statsd3.NewBufferedClient(
@@ -102,5 +111,5 @@ func NewRootScope(config metrics.Config) (metrics.Scope, error) {
 		time.Duration(config.ReportingIntervalMs)*time.Millisecond,
 	)
 
-	return &statsdMetrics{scope:  scope, closer: closer,}, nil
+	return &statsdMetrics{scope: scope, closer: closer, closeOnce: sync.Once{}}, nil
 }

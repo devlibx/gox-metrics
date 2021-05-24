@@ -32,6 +32,7 @@ func TestStatsd_Wrapper(t *testing.T) {
 	}
 	statsdService, err := NewRootScope(config)
 	assert.NoError(t, err)
+	defer statsdService.Stop()
 
 	counter := statsdService.Counter("some_counter")
 	go func() {
@@ -62,6 +63,7 @@ func TestUsageWithCf(t *testing.T) {
 	}
 	m, err := NewRootScope(c)
 	assert.NoError(t, err)
+	defer m.Stop()
 
 	cf, _ := test.MockCf(t, m)
 
