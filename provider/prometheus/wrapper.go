@@ -6,6 +6,7 @@ import (
 	promreporter "github.com/uber-go/tally/prometheus"
 	"io"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -45,7 +46,7 @@ type prometheusMetrics struct {
 	scope     tally.Scope
 	closer    io.Closer
 	closeOnce sync.Once
-	reporter metrics.Reporter
+	reporter  metrics.Reporter
 }
 
 func (s *prometheusMetrics) Counter(name string) metrics.Counter {
@@ -87,15 +88,17 @@ func (s *prometheusMetrics) HTTPHandler() http.Handler {
 	return s.reporter.HTTPHandler()
 }
 
-
 func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 
 	reporter := promreporter.NewReporter(promreporter.Options{})
 
+	// Replace "." to "_" - prometheus does not work with "."
+	prefix := strings.ReplaceAll(config.Prefix, ".", "_")
+
 	// Create tally specific scope object to use
 	scope, closer := tally.NewRootScope(
 		tally.ScopeOptions{
-			Prefix:         config.Prefix,
+			Prefix:         prefix,
 			Tags:           map[string]string{},
 			CachedReporter: reporter,
 			Separator:      promreporter.DefaultSeparator,
