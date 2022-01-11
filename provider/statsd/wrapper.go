@@ -88,7 +88,7 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 	// Build client
 	statsdClient, err := statsd.NewBufferedClient(
 		config.Statsd.Address,
-		"stats",
+		"",
 		time.Duration(config.Statsd.FlushIntervalMs)*time.Millisecond,
 		config.Statsd.FlushBytes,
 	)
