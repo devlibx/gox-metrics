@@ -1,6 +1,7 @@
 package statsd
 
 import (
+	"fmt"
 	statsd "github.com/cactus/go-statsd-client/statsd"
 	"github.com/devlibx/gox-base/errors"
 	"github.com/devlibx/gox-base/metrics"
@@ -10,6 +11,13 @@ import (
 	"sync"
 	"time"
 )
+
+var DefaultBuckets metrics.Buckets
+
+type CustomStatsReporter interface {
+	tally.StatsReporter
+	Init(tally.StatsReporter) error
+}
 
 // Wrapper of tally timer
 type timer struct {
@@ -100,6 +108,18 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 	opts := tallystatsd.Options{}
 	reporter := tallystatsd.NewReporter(statsdClient, opts)
 
+	if config.Statsd.StatsReporter != nil {
+		if r, ok := config.Statsd.StatsReporter.(CustomStatsReporter); ok {
+			if err := r.Init(reporter); err != nil {
+				return nil, errors.Wrap(err, "failed to create custom statsd client: config=%v", config)
+			} else {
+				reporter = r
+			}
+		} else {
+			return nil, errors.Wrap(err, "failed to create custom statsd client - it must be type CustomStatsReporter: config=%v", config)
+		}
+	}
+
 	// Create tally specific scope object to use
 	scope, closer := tally.NewRootScope(
 		tally.ScopeOptions{
@@ -111,4 +131,62 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 	)
 
 	return &statsdMetrics{scope: scope, closer: closer, closeOnce: sync.Once{}}, nil
+}
+
+type printStatsReporter struct{}
+
+func newPrintStatsReporter() tally.StatsReporter {
+	return &printStatsReporter{}
+}
+
+func (r *printStatsReporter) ReportCounter(name string, _ map[string]string, value int64) {
+	fmt.Printf("count %s %d\n", name, value)
+}
+
+func (r *printStatsReporter) ReportGauge(name string, _ map[string]string, value float64) {
+	fmt.Printf("gauge %s %f\n", name, value)
+}
+
+func (r *printStatsReporter) ReportTimer(name string, _ map[string]string, interval time.Duration) {
+	fmt.Printf("timer %s %s\n", name, interval.String())
+}
+
+func (r *printStatsReporter) ReportHistogramValueSamples(
+	name string,
+	_ map[string]string,
+	_ tally.Buckets,
+	bucketLowerBound,
+	bucketUpperBound float64,
+	samples int64,
+) {
+	fmt.Printf("histogram %s bucket lower %f upper %f samples %d\n",
+		name, bucketLowerBound, bucketUpperBound, samples)
+}
+
+func (r *printStatsReporter) ReportHistogramDurationSamples(
+	name string,
+	_ map[string]string,
+	_ tally.Buckets,
+	bucketLowerBound,
+	bucketUpperBound time.Duration,
+	samples int64,
+) {
+	fmt.Printf("histogram %s bucket lower %v upper %v samples %d\n",
+		name, bucketLowerBound, bucketUpperBound, samples)
+}
+
+func (r *printStatsReporter) Capabilities() tally.Capabilities {
+	return r
+}
+
+func (r *printStatsReporter) Reporting() bool {
+	return true
+}
+
+func (r *printStatsReporter) Tagging() bool {
+	return false
+}
+
+func (r *printStatsReporter) Flush() {
+	fmt.Printf("flush\n")
 }
