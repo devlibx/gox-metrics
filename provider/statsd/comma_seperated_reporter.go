@@ -2,7 +2,9 @@ package statsd
 
 import (
 	"fmt"
+	"github.com/devlibx/gox-base/util"
 	"github.com/uber-go/tally"
+	"sort"
 	"strings"
 	"time"
 )
@@ -17,10 +19,15 @@ func NewCommaPerpetratedStatsReporter(printLogs bool) CustomStatsReporter {
 }
 
 func getCommaSeparatedKeyValuePairs(keyValuePairs map[string]string) string {
+	keys := make([]string, 0, len(keyValuePairs))
+	for k := range keyValuePairs {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 	var returnValue []string
-	for key, value := range keyValuePairs {
-		if key != "" && value != "" {
-			returnValue = append(returnValue, fmt.Sprintf("%s=%s", key, value))
+	for _, key := range keys {
+		if val, ok := keyValuePairs[key]; ok && !util.IsStringEmpty(val) {
+			returnValue = append(returnValue, fmt.Sprintf("%s=%s", key, val))
 		}
 	}
 	return strings.Join(returnValue, ",")
