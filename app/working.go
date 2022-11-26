@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+//goland:noinspection GoUnreachableCode
 func main() {
 	var err error
 
