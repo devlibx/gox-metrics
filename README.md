@@ -26,6 +26,7 @@ config := metrics.Config{
             Address:         "127.0.0.1:8125",
             FlushIntervalMs: 10,
             FlushBytes:      1440,
+			Properties: map[string]interface{}{"comma_perpetrated_stats_reporter": true},
         },
     }
 
