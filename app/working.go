@@ -5,6 +5,7 @@ import (
 	"github.com/devlibx/gox-base/metrics"
 	"github.com/devlibx/gox-metrics/provider/statsd"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -12,14 +13,16 @@ import (
 func main() {
 	var err error
 
+	host := os.Getenv("__STATSD__")
 	scope, err := statsd.NewRootScope(metrics.Config{
 		Prefix:              "test_metric_stage",
 		ReportingIntervalMs: 10000,
 		Statsd: metrics.StatsdConfig{
-			Address:         "<TODO>:80",
+			Address:         host,
 			FlushIntervalMs: 10,
 			FlushBytes:      1400 * 1000,
 			StatsReporter:   statsd.NewCommaPerpetratedStatsReporter(true),
+			Properties:      map[string]interface{}{"comma_perpetrated_stats_reporter": true},
 		},
 	})
 

@@ -91,7 +91,7 @@ func (s *statsdMetrics) Capabilities() metrics.Capabilities {
 func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 
 	// if stats report is null then set this
-	if config.Statsd.Properties == nil {
+	if config.Statsd.Properties != nil {
 		if enabled, ok := config.Statsd.Properties["comma_perpetrated_stats_reporter"].(bool); ok && enabled {
 			config.Statsd.StatsReporter = NewCommaPerpetratedStatsReporter(false)
 		}
