@@ -13,10 +13,10 @@ func main() {
 	var err error
 
 	scope, err := statsd.NewRootScope(metrics.Config{
-		Prefix:              "uas.stage.metrics.biz",
+		Prefix:              "test_metric_stage",
 		ReportingIntervalMs: 10000,
 		Statsd: metrics.StatsdConfig{
-			Address:         "statsd.stg.dreamplug.net:80",
+			Address:         "<TODO>:80",
 			FlushIntervalMs: 10,
 			FlushBytes:      1400 * 1000,
 			StatsReporter:   statsd.NewCommaPerpetratedStatsReporter(true),
