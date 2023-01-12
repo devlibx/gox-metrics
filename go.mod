@@ -17,4 +17,5 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/twmb/murmur3 v1.1.5 // indirect
 	github.com/uber-go/tally v3.4.0+incompatible
+	go.uber.org/ratelimit v0.2.0
 )
