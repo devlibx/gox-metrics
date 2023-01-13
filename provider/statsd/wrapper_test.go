@@ -28,7 +28,7 @@ func TestStatsd_Wrapper(t *testing.T) {
 			Address:         "127.0.0.1:8125",
 			FlushIntervalMs: 10,
 			FlushBytes:      1440,
-			Properties:      map[string]interface{}{"comma_perpetrated_stats_reporter": true},
+			Properties:      map[string]interface{}{"comma_appended_stats_reporter": true},
 		},
 	}
 	statsdService, err := NewRootScope(config)

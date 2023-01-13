@@ -20,7 +20,7 @@ func main() {
 			FlushIntervalMs: 1000,
 			FlushBytes:      1400 * 1000,
 			StatsReporter:   statsd.NewCommaPerpetratedStatsReporter(true),
-			Properties:      map[string]interface{}{"comma_perpetrated_stats_reporter": false},
+			Properties:      map[string]interface{}{"comma_appended_stats_reporter": false},
 		},
 	})
 	if err != nil {
