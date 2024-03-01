@@ -124,11 +124,19 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 		}
 	}
 
+	tags := map[string]string{}
+
+	if config.Tags != nil {
+		for _, value := range strings.Split(config.Tags, ",") {
+			tags[strings.Split(value, "!")[0]] = strings.Split(value, "!")[1]
+		}
+	}
+
 	// Create tally specific scope object to use
 	scope, closer := tally.NewRootScope(
 		tally.ScopeOptions{
 			Prefix:   config.Prefix,
-			Tags:     map[string]string{},
+			Tags:     tags,
 			Reporter: reporter,
 		},
 		time.Duration(config.ReportingIntervalMs)*time.Millisecond,
