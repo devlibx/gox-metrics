@@ -9,6 +9,7 @@ import (
 	"io"
 	"sync"
 	"time"
+	"strings"
 )
 
 type CustomStatsReporter interface {
