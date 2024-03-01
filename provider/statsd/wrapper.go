@@ -126,10 +126,8 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 
 	tags := map[string]string{}
 
-	if config.Tags != nil {
-		for _, value := range strings.Split(config.Tags, ",") {
-			tags[strings.Split(value, "!")[0]] = strings.Split(value, "!")[1]
-		}
+	for _, value := range strings.Split(config.Tags, ",") {
+		tags[strings.Split(value, "!")[0]] = strings.Split(value, "!")[1]
 	}
 
 	// Create tally specific scope object to use
