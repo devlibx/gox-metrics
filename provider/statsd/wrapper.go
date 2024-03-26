@@ -125,6 +125,55 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 		}
 	}
 
+	// Create tally specific scope object to use
+	scope, closer := tally.NewRootScope(
+		tally.ScopeOptions{
+			Prefix:   config.Prefix,
+			Tags:     map[string]string{},
+			Reporter: reporter,
+		},
+		time.Duration(config.ReportingIntervalMs)*time.Millisecond,
+	)
+
+	return &statsdMetrics{scope: scope, closer: closer, closeOnce: sync.Once{}}, nil
+}
+
+func TaggedRootScope(config metrics.Config) (metrics.ClosableScope, error) {
+
+	// if stats report is null then set this
+	if config.Statsd.Properties != nil {
+		if enabled, ok := config.Statsd.Properties["comma_appended_stats_reporter"].(bool); ok && enabled {
+			config.Statsd.StatsReporter = NewCommaPerpetratedStatsReporter(false)
+		}
+	}
+
+	// Build client
+	statsdClient, err := statsd.NewBufferedClient(
+		config.Statsd.Address,
+		"",
+		time.Duration(config.Statsd.FlushIntervalMs)*time.Millisecond,
+		config.Statsd.FlushBytes,
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create statsd client: config=%v", config)
+	}
+
+	// Create a new Statsd reported
+	opts := tallystatsd.Options{}
+	reporter := tallystatsd.NewReporter(statsdClient, opts)
+
+	if config.Statsd.StatsReporter != nil {
+		if r, ok := config.Statsd.StatsReporter.(CustomStatsReporter); ok {
+			if err := r.Init(reporter); err != nil {
+				return nil, errors.Wrap(err, "failed to create custom statsd client: config=%v", config)
+			} else {
+				reporter = r
+			}
+		} else {
+			return nil, errors.Wrap(err, "failed to create custom statsd client - it must be type CustomStatsReporter: config=%v", config)
+		}
+	}
+
 	tags := map[string]string{}
 
 	for _, value := range strings.Split(config.Tags, ",") {
