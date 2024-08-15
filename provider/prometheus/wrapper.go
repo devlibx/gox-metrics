@@ -1,6 +1,7 @@
 package prometheus
 
 import (
+	"fmt"
 	"github.com/devlibx/gox-base/metrics"
 	"github.com/uber-go/tally"
 	promreporter "github.com/uber-go/tally/prometheus"
@@ -42,55 +43,59 @@ func (h *histogram) Start() metrics.Stopwatch {
 }
 
 // Wrapper of tally scope class
-type prometheusMetrics struct {
-	scope     tally.Scope
+type PrometheusMetrics struct {
+	Scope     tally.Scope
 	closer    io.Closer
 	closeOnce sync.Once
 	reporter  metrics.Reporter
 }
 
-func (s *prometheusMetrics) Counter(name string) metrics.Counter {
-	return s.scope.Counter(name)
+func (s *PrometheusMetrics) Counter(name string) metrics.Counter {
+	return s.Scope.Counter(name)
 }
 
-func (s *prometheusMetrics) Gauge(name string) metrics.Gauge {
-	return s.scope.Gauge(name)
+func (s *PrometheusMetrics) Gauge(name string) metrics.Gauge {
+	return s.Scope.Gauge(name)
 }
 
-func (s *prometheusMetrics) Timer(name string) metrics.Timer {
-	return &timer{timer: s.scope.Timer(name)}
+func (s *PrometheusMetrics) Timer(name string) metrics.Timer {
+	return &timer{timer: s.Scope.Timer(name)}
 }
 
-func (s *prometheusMetrics) Histogram(name string, buckets metrics.Buckets) metrics.Histogram {
-	return &histogram{histogram: s.scope.Histogram(name, buckets)}
+func (s *PrometheusMetrics) Histogram(name string, buckets metrics.Buckets) metrics.Histogram {
+	return &histogram{histogram: s.Scope.Histogram(name, buckets)}
 }
 
-func (s *prometheusMetrics) Tagged(tags map[string]string) metrics.Scope {
-	return &prometheusMetrics{scope: s.scope.Tagged(tags)}
+func (s *PrometheusMetrics) Tagged(tags map[string]string) metrics.Scope {
+	return &PrometheusMetrics{Scope: s.Scope.Tagged(tags)}
 }
 
-func (s *prometheusMetrics) SubScope(name string) metrics.Scope {
-	return &prometheusMetrics{scope: s.scope.SubScope(name)}
+func (s *PrometheusMetrics) SubScope(name string) metrics.Scope {
+	return &PrometheusMetrics{Scope: s.Scope.SubScope(name)}
 }
 
-func (s *prometheusMetrics) Capabilities() metrics.Capabilities {
-	return s.scope.Capabilities()
+func (s *PrometheusMetrics) Capabilities() metrics.Capabilities {
+	return s.Scope.Capabilities()
 }
 
-func (s *prometheusMetrics) Stop() error {
+func (s *PrometheusMetrics) Stop() error {
 	s.closeOnce.Do(func() {
 		_ = s.closer.Close()
 	})
 	return nil
 }
 
-func (s *prometheusMetrics) HTTPHandler() http.Handler {
+func (s *PrometheusMetrics) HTTPHandler() http.Handler {
 	return s.reporter.HTTPHandler()
 }
 
 func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 
-	reporter := promreporter.NewReporter(promreporter.Options{})
+	reporter := promreporter.NewReporter(promreporter.Options{
+		OnRegisterError: func(err error) {
+			fmt.Printf("error registering prometheus reporter: %v", err)
+		},
+	})
 
 	// Replace "." to "_" - prometheus does not work with "."
 	prefix := strings.ReplaceAll(config.Prefix, ".", "_")
@@ -106,5 +111,5 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 		time.Duration(config.ReportingIntervalMs)*time.Millisecond,
 	)
 
-	return &prometheusMetrics{scope: scope, closer: closer, closeOnce: sync.Once{}, reporter: reporter}, nil
+	return &PrometheusMetrics{Scope: scope, closer: closer, closeOnce: sync.Once{}, reporter: reporter}, nil
 }
