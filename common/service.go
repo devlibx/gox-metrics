@@ -3,9 +3,9 @@ package stats
 import (
 	"context"
 	"fmt"
-	"github.com/devlibx/gox-base/config"
-	"github.com/devlibx/gox-base/metrics"
-	"github.com/devlibx/gox-base/util"
+	"github.com/devlibx/gox-base/v2/config"
+	"github.com/devlibx/gox-base/v2/metrics"
+	"github.com/devlibx/gox-base/v2/util"
 	httpCommand "github.com/devlibx/gox-http/command/http"
 	"github.com/devlibx/gox-metrics/v2/provider/multi"
 	"github.com/devlibx/gox-metrics/v2/provider/prometheus"

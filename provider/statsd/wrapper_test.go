@@ -2,9 +2,9 @@ package statsd
 
 import (
 	"fmt"
-	"github.com/devlibx/gox-base/metrics"
-	"github.com/devlibx/gox-base/test"
-	"github.com/devlibx/gox-base/util"
+	"github.com/devlibx/gox-base/v2/metrics"
+	"github.com/devlibx/gox-base/v2/test"
+	"github.com/devlibx/gox-base/v2/util"
 	"github.com/devlibx/gox-metrics/v2"
 	"github.com/stretchr/testify/assert"
 	"testing"

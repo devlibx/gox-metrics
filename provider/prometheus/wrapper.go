@@ -2,7 +2,7 @@ package prometheus
 
 import (
 	"fmt"
-	"github.com/devlibx/gox-base/metrics"
+	"github.com/devlibx/gox-base/v2/metrics"
 	"github.com/uber-go/tally"
 	promreporter "github.com/uber-go/tally/prometheus"
 	"io"

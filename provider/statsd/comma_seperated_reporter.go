@@ -2,7 +2,7 @@ package statsd
 
 import (
 	"fmt"
-	"github.com/devlibx/gox-base/util"
+	"github.com/devlibx/gox-base/v2/util"
 	"github.com/uber-go/tally"
 	"sort"
 	"strings"

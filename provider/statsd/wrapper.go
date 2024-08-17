@@ -2,8 +2,8 @@ package statsd
 
 import (
 	statsd "github.com/cactus/go-statsd-client/statsd"
-	"github.com/devlibx/gox-base/errors"
-	"github.com/devlibx/gox-base/metrics"
+	"github.com/devlibx/gox-base/v2/errors"
+	"github.com/devlibx/gox-base/v2/metrics"
 	"github.com/uber-go/tally"
 	tallystatsd "github.com/uber-go/tally/statsd"
 	"io"

@@ -1,8 +1,8 @@
 package multi
 
 import (
-	"github.com/devlibx/gox-base/errors"
-	"github.com/devlibx/gox-base/metrics"
+	"github.com/devlibx/gox-base/v2/errors"
+	"github.com/devlibx/gox-base/v2/metrics"
 	"github.com/devlibx/gox-metrics/v2/provider/prometheus"
 	"github.com/devlibx/gox-metrics/v2/provider/statsd"
 	"io"
