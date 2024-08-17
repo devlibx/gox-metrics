@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/devlibx/gox-base/metrics"
-	"github.com/devlibx/gox-metrics/provider/statsd"
+	"github.com/devlibx/gox-metrics/v2/provider/statsd"
 	"go.uber.org/ratelimit"
 	"os"
 	"time"

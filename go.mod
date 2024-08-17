@@ -1,6 +1,6 @@
-module github.com/devlibx/gox-metrics
+module github.com/devlibx/gox-metrics/v2
 
-go 1.16
+go 1.21
 
 replace github.com/cactus/go-statsd-client => github.com/cactus/go-statsd-client v3.1.0+incompatible
 

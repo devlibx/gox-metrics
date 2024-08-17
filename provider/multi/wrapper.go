@@ -3,8 +3,8 @@ package multi
 import (
 	"github.com/devlibx/gox-base/errors"
 	"github.com/devlibx/gox-base/metrics"
-	"github.com/devlibx/gox-metrics/provider/prometheus"
-	"github.com/devlibx/gox-metrics/provider/statsd"
+	"github.com/devlibx/gox-metrics/v2/provider/prometheus"
+	"github.com/devlibx/gox-metrics/v2/provider/statsd"
 	"io"
 	"net/http"
 	"sync"
@@ -67,7 +67,7 @@ func (m *multiMetrics) Gauge(name string) metrics.Gauge {
 func (m *multiMetrics) Timer(name string) metrics.Timer {
 	c := compositeTimer{
 		statsd:     m.statsdMetrics.Timer(name),
-		prometheus: m.prometheusMetrics.Timer(name+postfix),
+		prometheus: m.prometheusMetrics.Timer(name + postfix),
 	}
 	return &c
 }
@@ -90,7 +90,7 @@ func (m *multiMetrics) Tagged(tags map[string]string) metrics.Scope {
 func (m *multiMetrics) SubScope(name string) metrics.Scope {
 	return &multiMetrics{
 		statsdMetrics:     m.statsdMetrics.SubScope(name),
-		prometheusMetrics: m.prometheusMetrics.SubScope(name+postfix),
+		prometheusMetrics: m.prometheusMetrics.SubScope(name + postfix),
 	}
 }
 
