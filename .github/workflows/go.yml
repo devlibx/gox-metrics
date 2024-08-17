@@ -62,6 +62,6 @@ jobs:
           new_v2_version="v2.${minor_version}.${new_patch_version}"
           echo "New V2 version: $new_v2_version"
           
-          # Create a new tag and push
+          # Create a new tag and push 
           # git tag $new_version; git push --tags
           git tag $new_v2_version; git push --tags
