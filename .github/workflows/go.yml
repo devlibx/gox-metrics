@@ -57,7 +57,7 @@ jobs:
           patch_version=$(echo "$version_without_v" | cut -d '.' -f 3)
           new_patch_version=$((patch_version + 1))
           new_version="v${major_version}.${minor_version}.${new_patch_version}"
-          echo "New version: $new_version"
+          # echo "New version: $new_version"
           
           new_v2_version="v2.${minor_version}.${new_patch_version}"
           echo "New V2 version: $new_v2_version"
