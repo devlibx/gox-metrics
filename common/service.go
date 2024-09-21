@@ -6,7 +6,7 @@ import (
 	"github.com/devlibx/gox-base/v2/config"
 	"github.com/devlibx/gox-base/v2/metrics"
 	"github.com/devlibx/gox-base/v2/util"
-	httpCommand "github.com/devlibx/gox-http/command/http"
+	httpCommand "github.com/devlibx/gox-http/v4/command/http"
 	"github.com/devlibx/gox-metrics/v2/provider/multi"
 	"github.com/devlibx/gox-metrics/v2/provider/prometheus"
 	"github.com/devlibx/gox-metrics/v2/provider/statsd"
