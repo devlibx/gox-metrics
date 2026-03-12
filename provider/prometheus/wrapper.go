@@ -2,14 +2,15 @@ package prometheus
 
 import (
 	"fmt"
-	"github.com/devlibx/gox-base/v2/metrics"
-	"github.com/uber-go/tally"
-	promreporter "github.com/uber-go/tally/prometheus"
 	"io"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/devlibx/gox-base/v2/metrics"
+	"github.com/uber-go/tally"
+	promreporter "github.com/uber-go/tally/prometheus"
 )
 
 // Wrapper of tally timer
@@ -104,7 +105,7 @@ func NewRootScope(config metrics.Config) (metrics.ClosableScope, error) {
 	scope, closer := tally.NewRootScope(
 		tally.ScopeOptions{
 			Prefix:         prefix,
-			Tags:           map[string]string{},
+			Tags:           map[string]string{"prefix_tag": prefix},
 			CachedReporter: reporter,
 			Separator:      promreporter.DefaultSeparator,
 		},
